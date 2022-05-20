@@ -19,7 +19,7 @@ paste_bool = False
 
 # FINICKY WITH METACLASS ERRORS, REFORMAT TO FUNCTION BASED!
 
-class Externals(copy_dict, user_num, user_txt): #grabs values needed for external use case
+class Externals: #grabs values needed for external use case
 
     #
     # copies text from dictionary to user's clipboard
@@ -33,10 +33,9 @@ class Externals(copy_dict, user_num, user_txt): #grabs values needed for externa
         self.user_txt = user_txt
         self.out_txt = ''
         self.grab_bool = False
-        self.int = self.Internals()
-        return 0
+        self.int = self.Internals(copy_dict, user_txt, user_num)
 
-    class Internals(copy_dict, user_txt, user_num, clear_bool, copy_bool): #grabs values needed for internal use case
+    class Internals: #grabs values needed for internal use case
 
         #
         # creates  copies of user's clipboard and saves to a dictionary above
@@ -44,8 +43,10 @@ class Externals(copy_dict, user_num, user_txt): #grabs values needed for externa
         #
 
 
-        def __init__(self, copy_dict): # grabs dict, creates self bool values
+        def __init__(self, copy_dict, user_txt, user_num): # grabs dict, creates self bool values
             self.copy_dict = copy_dict
+            self.user_txt = user_txt
+            self.user_num = user_num
             self.copy_bool = False
             self.clear_bool = False
 
@@ -75,8 +76,6 @@ class Externals(copy_dict, user_num, user_txt): #grabs values needed for externa
             clear_bool
             clear_bool = True
             # clears cache
-
-
 
     def listener(self):
         if k.is_pressed(f'ctrl+c+1'):
@@ -151,5 +150,7 @@ class Externals(copy_dict, user_num, user_txt): #grabs values needed for externa
             pyp.paste(self.copy_dict[9])
             pya.hotkey('ctrl', 'v')
         
+ext = Externals(copy_bool, user_num, user_txt)
+
 while 1:
-    Externals.listener()
+    ext.listener()
