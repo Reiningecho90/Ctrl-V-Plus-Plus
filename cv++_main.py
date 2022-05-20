@@ -4,6 +4,7 @@ import pyperclip as pyp
 import pyautogui as pya
 import time as t
 import tkinter as tk
+import threading as th
 
 # dict for caching all lines of text
 copy_dict = {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '', 9: '', 10: ''}
@@ -17,9 +18,9 @@ copy_bool = False
 clear_bool = False
 paste_bool = False
 
-# FINICKY WITH METACLASS ERRORS, REFORMAT TO FUNCTION BASED!
+# single class based for all worker functions, GUI separate
 
-class Externals(copy_dict, user_num, user_txt): #grabs values needed for external use case
+class Worker(copy_dict, user_num, user_txt): #grabs values needed for external use case
 
     #
     # copies text from dictionary to user's clipboard
@@ -33,123 +34,70 @@ class Externals(copy_dict, user_num, user_txt): #grabs values needed for externa
         self.user_txt = user_txt
         self.out_txt = ''
         self.grab_bool = False
-        self.int = self.Internals()
-        return 0
 
-    class Internals(copy_dict, user_txt, user_num, clear_bool, copy_bool): #grabs values needed for internal use case
-
-        #
-        # creates  copies of user's clipboard and saves to a dictionary above
-        # can also fully clear cache by making everything standard again
-        #
+    def __init__(self, copy_dict): # grabs dict, creates self bool values
+        self.copy_dict = copy_dict
+        self.copy_bool = False
+        self.clear_bool = False
 
 
-        def __init__(self, copy_dict): # grabs dict, creates self bool values
-            self.copy_dict = copy_dict
-            self.copy_bool = False
-            self.clear_bool = False
-
-
-        def cache_copy(self, user_num, user_txt): # copies user's clipboard to a dictionary value based on hotkey
-            if user_num != 0:
-                self.copy_dict[user_num] = user_txt
-                copy_dict.update(self.copy_dict)
-                self.copy_bool = True
-                copy_bool
-                copy_bool = True
-                return self.copy_bool
-            else:
-                self.copy_dict[10] = user_txt
-                copy_dict.update(self.copy_dict)
-                self.copy_bool = True
-                copy_bool
-                copy_bool = True
-                return self.copy_bool
-            # confirm text cached
-
-
-        def cache_clear(self): # clears entire cache
-            self.copy_dict = {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '', 9: '', 10: ''}
+    def cache_copy(self, user_num, user_txt): # copies user's clipboard to a dictionary value based on hotkey
+        if user_num != 0:
+            self.copy_dict[user_num] = user_txt
             copy_dict.update(self.copy_dict)
-            self.clear_bool = True
-            clear_bool
-            clear_bool = True
-            # clears cache
+            self.copy_bool = True
+            copy_bool
+            copy_bool = True
+            return self.copy_bool
+        else: # only for tenth copy or paste due to keyboard formatting irl
+            self.copy_dict[10] = user_txt
+            copy_dict.update(self.copy_dict)
+            self.copy_bool = True
+            copy_bool
+            copy_bool = True
+            return self.copy_bool
+        # confirm text cached
 
 
+    def cache_clear(self): # clears entire cache
+        self.copy_dict = {1: '', 2: '', 3: '', 4: '', 5: '', 6: '', 7: '', 8: '', 9: '', 10: ''}
+        copy_dict.update(self.copy_dict)
+        self.clear_bool = True
+        clear_bool
+        clear_bool = True
+        # clears cache
 
-    def listener(self):
-        if k.is_pressed(f'ctrl+c+1'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 0, user_txt)
-        elif k.is_pressed(f'ctrl+c+2'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 1, user_txt)
-        elif k.is_pressed(f'ctrl+c+3'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 2, user_txt)
-        elif k.is_pressed(f'ctrl+c+4'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 3, user_txt)
-        elif k.is_pressed(f'ctrl+c+5'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 4, user_txt)
-        elif k.is_pressed(f'ctrl+c+6'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 5, user_txt)
-        elif k.is_pressed(f'ctrl+c+7'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 6, user_txt)
-        elif k.is_pressed(f'ctrl+c+8'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 7, user_txt)
-        elif k.is_pressed(f'ctrl+c+9'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 8, user_txt)
-        elif k.is_pressed(f'ctrl+c+0'):
-            pya.hotkey('ctrl', 'c')
-            user_txt = pyp.paste()
-            self.int.cache_copy(self, 9, user_txt)
 
-        if k.is_pressed(f'ctrl+v+1'):
-            pyp.paste(self.copy_dict[0])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+2'):
-            pyp.paste(self.copy_dict[1])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+3'):
-            pyp.paste(self.copy_dict[2])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+4'):
-            pyp.paste(self.copy_dict[3])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+5'):
-            pyp.paste(self.copy_dict[4])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+6'):
-            pyp.paste(self.copy_dict[5])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+7'):
-            pyp.paste(self.copy_dict[6])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+8'):
-            pyp.paste(self.copy_dict[7])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+9'):
-            pyp.paste(self.copy_dict[8])
-            pya.hotkey('ctrl', 'v')
-        if k.is_pressed(f'ctrl+v+0'):
-            pyp.paste(self.copy_dict[9])
-            pya.hotkey('ctrl', 'v')
-        
-while 1:
-    Externals.listener()
+    def listener_copy(self):
+        while 1:
+            for i in range(0, 10):
+                if k.is_pressed(f'ctrl+c+{str(i)}'): # uses previously compiled function to cache text selected
+                    self.user_num = i
+                    self.user_txt = pyp.paste()
+                    self.cache_copy(self.user_num, self.user_txt)
+                    self.out_txt = self.user_txt
+                    return self.out_txt
+                else:
+                    continue
+
+    def listener_paste(self):
+        while 1:
+            for i in range(0, 10):
+                if k.is_pressed(f'ctrl+v+{str(i)}'): # uses previously compiled function to paste text selected
+                    pya.hotkey('ctrl', 'v')
+                    pyp.copy(self.copy_dict[i])
+                    self.paste_bool = True
+                    paste_bool
+                    paste_bool = True
+                    return self.paste_bool # returns for frontend use (tkinter listener loop)
+                else:
+                    continue
+
+
+# establish and run threads/main body
+
+if __name__ == '__main__':
+    th.Thread(target=Worker.listener_copy, args=(Worker)).start()
+    print('t1 started')
+    th.Thread(target=Worker.listener_paste, args=(Worker)).start()
+    print('t2 started')
