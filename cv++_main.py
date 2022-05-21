@@ -27,6 +27,7 @@ class clipboard:
         # to copy - CTRL+ALT+NUM
         # compensate for held keys
         held = {'copy': False,'paste': False}
+        print('listening')
 
         while True:
             if k.is_pressed(f'ctrl+c'):
@@ -36,6 +37,7 @@ class clipboard:
                         self.clear()
 
                     self.add(pyp.paste())
+                    print('added ' + pyp.paste() + ' to cache at ' + str(self.clipboard_length))
                 held['copy'] = True
             else:
                 held['copy'] = False
@@ -46,12 +48,14 @@ class clipboard:
             for i in range(1,9):
                 i2 = 0 if i == 10 else i
 
-                if k.is_pressed(f'ctrl+alt+v+{str(i2)}'):
+                if k.is_pressed(f'ctrl+alt+{str(i2)}'):
                     if not held['paste']:
+                        t.sleep(0.5)
                         pyp.copy(self.clipboard[i])
                         pya.hotkey('ctrl', 'v')
 
                         held['paste'] = True
+                        print('pasted ' + self.clipboard[i])
                     else:
                         held['paste'] = False
 
