@@ -30,23 +30,23 @@ class clipboard:
         print('listening')
 
         while True:
-            if k.is_pressed(f'ctrl+c'):
-                if not held['copy']:
-                    # 0-9 (10 objects)
-                    if self.clipboard_length >= 10:
-                        self.clear()
-
-                    self.add(pyp.paste())
-                    print('added ' + pyp.paste() + ' to cache at ' + str(self.clipboard_length))
-                held['copy'] = True
-            else:
-                held['copy'] = False
-
             # paste with ctrl+alt+v+{num}
             # check from 1-9. 10 can't be typed as a single key
             # so we use 0 and replace as 10.
             for i in range(1,9):
                 i2 = 0 if i == 10 else i
+
+                if k.is_pressed(f'ctrl+c+{str(i2)}'):
+                    if not held['copy']:
+                        # 0-9 (10 objects)
+                        if self.clipboard_length >= 10:
+                            self.clear()
+
+                        self.add(pyp.paste())
+                        print('added ' + pyp.paste() + ' to cache at ' + str(self.clipboard_length))
+                    held['copy'] = True
+                else:
+                    held['copy'] = False
 
                 if k.is_pressed(f'ctrl+alt+{str(i2)}'):
                     if not held['paste']:
